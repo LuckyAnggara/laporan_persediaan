@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LaporanPersediaan;
 use App\Models\Pembelian;
 use App\Models\Persediaan;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 
@@ -19,28 +21,46 @@ class PersediaanController extends Controller
     {
 
         $tanggal = $request->tanggal;
+        $limit =  $request->input('limit', 10);
         $startDate = '2020-01-01 00:00:01';
 
         if (!$tanggal) {
+            $tanggalShow = date("Y/m/d g:i A");
             $newDate = \Carbon\Carbon::parse(date("Y/m/d"))->format('Y-m-d 23:59:59');;
-            $persediaan = Persediaan::selectRaw('sum(debit) as debit, sum(kredit) as kredit, kode_barang, sum(debit - kredit) as saldo')
+            $master = Persediaan::selectRaw('sum(debit) as debit, sum(kredit) as kredit, kode_barang, sum(debit - kredit) as balance')
                 ->with('barang')
                 ->whereBetween('tanggal_transaksi', [$startDate, $newDate])
-                ->groupBy('kode_barang')
-                ->get();
-        } else {
-            $newDate = \Carbon\Carbon::parse($tanggal)->format('Y-m-d 23:59:59');
+                // ->whereNot('saldo',  0)
+                ->groupBy('kode_barang');
 
-            $persediaan = Persediaan::selectRaw('sum(debit) as debit, sum(kredit) as kredit, kode_barang, sum(debit - kredit) as saldo')
+        } else {
+            $tanggalShow = $tanggal;
+            $newDate = \Carbon\Carbon::parse($tanggal)->format('Y-m-d 23:59:59');
+            $master = Persediaan::selectRaw('sum(debit) as debit, sum(kredit) as kredit, kode_barang, sum(debit - kredit) as balance')
                 ->with('barang')
                 ->whereBetween('tanggal_transaksi', [$startDate, $newDate])
-                ->groupBy('kode_barang')
-                ->get();
+                // ->whereNot('saldo',  0)
+                ->groupBy('kode_barang');
+        
+        }
+        $master2 = $master->get();
+
+   
+        $persediaan = $master->paginate($limit);
+        $persediaan->appends(['tanggal' => $tanggal]);
+        $persediaan->appends(['limit' => $limit]);
+
+        $totalSemuaPersediaan = 0;
+        foreach ($master2 as $key => $value) {
+            $harga = Pembelian::where('kode_barang', $value->kode_barang)->whereNot('saldo',  0)->first();
+            if ($harga) {
+                $value->harga_pokok =  $harga->harga_beli;
+            } else {
+                $value->harga_pokok = 0;
+            }
+            $totalSemuaPersediaan = $totalSemuaPersediaan + ($value->balance * $value->harga_pokok);
         }
 
-
-
-        $total = 0;
         foreach ($persediaan as $key => $value) {
             $harga = Pembelian::where('kode_barang', $value->kode_barang)->whereNot('saldo',  0)->first();
             if ($harga) {
@@ -48,10 +68,42 @@ class PersediaanController extends Controller
             } else {
                 $value->harga_pokok = 0;
             }
-
-            $total = $total + ($value->saldo * $value->harga_pokok);
         }
 
-        return view('persediaan.index', ['persediaan' => $persediaan, 'total' => $total, 'tanggal' => $newDate]);
+        
+
+        // return $persediaan;
+
+        return view('persediaan.index', ['persediaan' => $persediaan, 'totalSemuaPersediaan' => $totalSemuaPersediaan, 'tanggal' => $tanggalShow, 'limit' => $limit]);
+    }
+
+    function laporan(Request $request)
+    {
+        $tanggal = $request->tanggal;
+        $limit =  $request->input('limit', 10);
+        
+        if (!$tanggal) {
+            $tanggalShow = date("Y/m/d g:i A");
+            $newDate = Carbon::parse(date("Y/m/d"))->format('Y-m-d');;
+        } else {
+            $tanggalShow = $tanggal;
+            $newDate = Carbon::parse($tanggal)->format('Y-m-d');
+        }
+        $master = LaporanPersediaan::with('barang')
+        ->whereDate('created_at', $newDate);
+
+        $master2 = $master->get();
+
+        $master = $master->paginate($limit);
+        $master->appends(['tanggal' => $tanggal]);
+        $master->appends(['limit' => $limit]);
+
+        $totalSemuaPersediaan = 0;
+        foreach ($master2 as $key => $value) {
+            $totalSemuaPersediaan = $totalSemuaPersediaan + $value->total;
+        }
+
+
+        return view('persediaan.laporan', ['persediaan' => $master,  'totalSemuaPersediaan' => $totalSemuaPersediaan, 'tanggal' => $tanggalShow, 'limit' => $limit]);
     }
 }

@@ -13,7 +13,7 @@
     <div class="container-fluid container-lg mx-auto mt-5">
         <span class="fs-1">Data Persediaan</span>
 
-        <form action="{{ route('persediaan') }}" method="get">
+        <form action="{{ route('laporan') }}" method="get">
             <div class="row my-2 d-print-none">
                 <label for="staticEmail" class="col-sm-2 col-form-label">Tanggal Data</label>
                 <div class="form-group col-3">
@@ -82,11 +82,10 @@
                             @foreach($persediaan as $key=> $p)
                                 @if ($p->balance != 0)
                                 @php
-                                $total = $p->harga_pokok * $p->balance;
-                                $totalTable = $totalTable + $total;
+                                $totalTable = $totalTable + $p->total;
                                 @endphp
-                                @if($total < 0) <tr style="background-color: #ed6464;">
-                                @elseif($total == 0) <tr style="background-color: #ffee00;">
+                                @if($p->total < 0) <tr style="background-color: #ed6464;">
+                                @elseif($p->total == 0) <tr style="background-color: #ffee00;">
                                 @else
                                     <tr>
                                 @endif
@@ -96,8 +95,8 @@
                                         <td>{{ $p->debit }}</td>
                                         <td>{{ $p->kredit }}</td>
                                         <td>{{ $p->balance }}</td>
-                                        <td>{{ number_format($p->harga_pokok,0) }}</td>
-                                        <td>{{ number_format($total,0) }}</td>
+                                        <td>{{ number_format($p->harga,0) }}</td>
+                                        <td>{{ number_format($p->total,0) }}</td>
                                     </tr>
                                 @endif
                             @endforeach

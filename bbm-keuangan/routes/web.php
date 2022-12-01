@@ -16,4 +16,5 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/persediaan', [PersediaanController::class, 'index'])->name('persediaan');
+Route::get('/laporan', [PersediaanController::class, 'laporan'])->name('laporan');
 Route::get('/', [PersediaanController::class, 'home'])->name('home');
