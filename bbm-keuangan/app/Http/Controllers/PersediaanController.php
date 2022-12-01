@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pembelian;
 use App\Models\Persediaan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 
 class PersediaanController extends Controller
 {
@@ -17,16 +18,22 @@ class PersediaanController extends Controller
     function index(Request $request)
     {
 
-        $tanggal = null;
+        $tanggal = $request->tanggal;
+        $startDate = '2020-01-01 00:00:01';
 
-        if ($request->all()) {
+        if (!$tanggal) {
+            $newDate = \Carbon\Carbon::parse(date("Y/m/d"))->format('Y-m-d 23:59:59');;
             $persediaan = Persediaan::selectRaw('sum(debit) as debit, sum(kredit) as kredit, kode_barang, sum(debit - kredit) as saldo')
                 ->with('barang')
+                ->whereBetween('tanggal_transaksi', [$startDate, $newDate])
                 ->groupBy('kode_barang')
                 ->get();
         } else {
+            $newDate = \Carbon\Carbon::parse($tanggal)->format('Y-m-d 23:59:59');
+
             $persediaan = Persediaan::selectRaw('sum(debit) as debit, sum(kredit) as kredit, kode_barang, sum(debit - kredit) as saldo')
                 ->with('barang')
+                ->whereBetween('tanggal_transaksi', [$startDate, $newDate])
                 ->groupBy('kode_barang')
                 ->get();
         }
@@ -45,6 +52,6 @@ class PersediaanController extends Controller
             $total = $total + ($value->saldo * $value->harga_pokok);
         }
 
-        return view('persediaan.index', ['persediaan' => $persediaan, 'total' => $total, 'tanggal' => $tanggal]);
+        return view('persediaan.index', ['persediaan' => $persediaan, 'total' => $total, 'tanggal' => $newDate]);
     }
 }

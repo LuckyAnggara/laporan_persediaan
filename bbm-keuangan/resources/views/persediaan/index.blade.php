@@ -12,11 +12,13 @@
     <div class="container mx-auto mt-5">
         <h3>Data Persediaan</h3>
 
-        <form action="{{ route('home') }}" method="get">
+
+        <form action="{{ route('persediaan') }}" method="get">
             <div class="row my-2">
+                <label for="staticEmail" class="col-sm-2 col-form-label">Tanggal Data</label>
                 <div class="form-group col-3">
                     <div class="input-group date" id="datetimepicker">
-                        <input type="text" class="form-control" name="tanggal" />
+                        <input type="text" class="form-control" name="tanggal" value="{{$tanggal}}" />
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
                         </span>
@@ -26,6 +28,13 @@
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </div>
+            <p class="my-2">
+                Tanggal Data {{
+            date('d F Y', strtotime($tanggal));
+        }}
+
+            </p>
+
 
             <p>Total Persediaan Rp. {{number_format($total,0)}}</p>
 
