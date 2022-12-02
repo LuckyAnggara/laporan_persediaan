@@ -15,7 +15,7 @@
         <h3>Keuangan</h3>
 
         <a type="button" class="btn btn-primary mt-2" href="{{ route('persediaan') }}">Persediaan</a>
-        <button type="button" class="btn btn-primary mt-2">Laporan Laba / Rugi</button>
+        <a type="button" class="btn btn-primary mt-2" href="{{ route('labarugi')>Laporan Laba / Rugi</a>
 
     </div>
 

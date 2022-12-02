@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LabaRugiController;
 use App\Http\Controllers\PersediaanController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,5 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/persediaan', [PersediaanController::class, 'index'])->name('persediaan');
+Route::get('/laba-rugi', [LabaRugiController::class, 'index'])->name('labarugi');
 Route::get('/laporan', [PersediaanController::class, 'laporan'])->name('laporan');
 Route::get('/', [PersediaanController::class, 'home'])->name('home');
+
+Route::get('/run', [LabaRugiController::class, 'run'])->name('run');
+Route::get('/test', [LabaRugiController::class, 'testMonth'])->name('testMonth');

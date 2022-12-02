@@ -8,6 +8,7 @@ use App\Models\Persediaan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 
 class PersediaanController extends Controller
 {
@@ -26,26 +27,24 @@ class PersediaanController extends Controller
 
         if (!$tanggal) {
             $tanggalShow = date("Y/m/d g:i A");
-            $newDate = \Carbon\Carbon::parse(date("Y/m/d"))->format('Y-m-d 23:59:59');;
+            $newDate = Carbon::parse(date("Y/m/d"))->format('Y-m-d 23:59:59');
             $master = Persediaan::selectRaw('sum(debit) as debit, sum(kredit) as kredit, kode_barang, sum(debit - kredit) as balance')
                 ->with('barang')
                 ->whereBetween('tanggal_transaksi', [$startDate, $newDate])
                 // ->whereNot('saldo',  0)
                 ->groupBy('kode_barang');
-
         } else {
             $tanggalShow = $tanggal;
-            $newDate = \Carbon\Carbon::parse($tanggal)->format('Y-m-d 23:59:59');
+            $newDate = Carbon::parse($tanggal)->format('Y-m-d 23:59:59');
             $master = Persediaan::selectRaw('sum(debit) as debit, sum(kredit) as kredit, kode_barang, sum(debit - kredit) as balance')
                 ->with('barang')
                 ->whereBetween('tanggal_transaksi', [$startDate, $newDate])
                 // ->whereNot('saldo',  0)
                 ->groupBy('kode_barang');
-        
         }
         $master2 = $master->get();
 
-   
+
         $persediaan = $master->paginate($limit);
         $persediaan->appends(['tanggal' => $tanggal]);
         $persediaan->appends(['limit' => $limit]);
@@ -70,9 +69,8 @@ class PersediaanController extends Controller
             }
         }
 
-        
 
-        // return $persediaan;
+
 
         return view('persediaan.index', ['persediaan' => $persediaan, 'totalSemuaPersediaan' => $totalSemuaPersediaan, 'tanggal' => $tanggalShow, 'limit' => $limit]);
     }
@@ -81,7 +79,7 @@ class PersediaanController extends Controller
     {
         $tanggal = $request->tanggal;
         $limit =  $request->input('limit', 10);
-        
+
         if (!$tanggal) {
             $tanggalShow = date("Y/m/d g:i A");
             $newDate = Carbon::parse(date("Y/m/d"))->format('Y-m-d');;
@@ -90,7 +88,7 @@ class PersediaanController extends Controller
             $newDate = Carbon::parse($tanggal)->format('Y-m-d');
         }
         $master = LaporanPersediaan::with('barang')
-        ->whereDate('created_at', $newDate);
+            ->whereDate('created_at', $newDate);
 
         $master2 = $master->get();
 
@@ -103,7 +101,9 @@ class PersediaanController extends Controller
             $totalSemuaPersediaan = $totalSemuaPersediaan + $value->total;
         }
 
+        $tanggalData = LaporanPersediaan::select(DB::raw('DATE(created_at) as date'))->groupBy('date')->get();
 
-        return view('persediaan.laporan', ['persediaan' => $master,  'totalSemuaPersediaan' => $totalSemuaPersediaan, 'tanggal' => $tanggalShow, 'limit' => $limit]);
+
+        return view('persediaan.laporan', ['persediaan' => $master,  'totalSemuaPersediaan' => $totalSemuaPersediaan, 'tanggal' => $tanggalShow, 'limit' => $limit, 'tanggalData' => $tanggalData]);
     }
 }

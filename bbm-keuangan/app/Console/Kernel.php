@@ -16,7 +16,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('generate:persediaan')
-        ->dailyAt('21:00');
+            ->dailyAt('21:00');
+        $schedule->command('generate:labarugi')
+            ->dailyAt('21:00');
+        // $schedule->command('generate:persediaan')
+        //     ->everyTwoMinutes();
     }
 
     /**
@@ -26,7 +30,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
