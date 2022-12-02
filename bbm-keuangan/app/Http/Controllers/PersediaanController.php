@@ -103,6 +103,8 @@ class PersediaanController extends Controller
 
         $tanggalData = LaporanPersediaan::select(DB::raw('DATE(created_at) as date'))->groupBy('date')->get();
 
+        // return $tanggalData;
+
 
         return view('persediaan.laporan', ['persediaan' => $master,  'totalSemuaPersediaan' => $totalSemuaPersediaan, 'tanggal' => $tanggalShow, 'limit' => $limit, 'tanggalData' => $tanggalData]);
     }

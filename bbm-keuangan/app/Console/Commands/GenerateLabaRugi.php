@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\LabaRugiController;
 use App\Models\Biaya;
 use App\Models\Gaji;
 use App\Models\LabaRugi;
@@ -68,71 +69,71 @@ class GeneratePersediaan extends Command
         $pembelian = Pembelian::selectRaw('sum(total_harga) as total_pembelian')
             ->whereBetween('tanggal_input', [$fromDate, $toDate])->first();
 
-        $persediaanAwal = $this->persediaan($fromDate->subDay());
-        $persediaanAkhir = $this->persediaan($fromDate->addDay());
+        $persediaanAwal = LabaRugiController::persediaan($fromDate->subDay());
+        $persediaanAkhir = LabaRugiController::persediaan($fromDate->addDay());
 
         $data[0] = array(
-            'no' => 1,
+            'nomor' => 1,
             'account' => 'PENJUALAN',
             'class' => 'fw-bold',
             'balance' => $totalPenjualan->total_penjualan
         );
         $data[1] = array(
-            'no' => 2,
+            'nomor' => 2,
             'class' => 'text-danger',
             'account' => 'RETUR PENJUALAN',
             'balance' => $returPenjualan->retur_total == null ? 0 : $returPenjualan->retur_total
         );
         $data[2] = array(
-            'no' => 3,
+            'nomor' => 3,
             'class' => 'fw-bold',
             'account' => 'TOTAL PENJUALAN (1-2)',
             'balance' => $totalPenjualan->total_penjualan - $totalPenjualan->diskon - $data[1]['balance']
         );
         $data[3] = array(
-            'no' => 4,
+            'nomor' => 4,
             'class' => '',
             'account' => 'PERSEDIAAN AWAL',
             'balance' => $persediaanAwal
         );
         $data[4] = array(
-            'no' => 5,
+            'nomor' => 5,
             'class' => '',
             'account' => 'TOTAL PEMBELIAN',
             'balance' => $pembelian->total_pembelian == null ? 0 : $pembelian->total_pembelian
         );
         $data[5] = array(
-            'no' => 6,
+            'nomor' => 6,
             'class' => '',
             'account' => 'PERSEDIAAN AKHIR',
             'balance' =>  $persediaanAkhir
         );
         $data[6] = array(
-            'no' => 7,
+            'nomor' => 7,
             'class' => 'fw-bold text-danger',
             'account' => 'HARGA POKOK PENJUALAN (4+5-6)',
             'balance' =>  $persediaanAwal + $pembelian->total_pembelian - $persediaanAkhir
         );
         $data[7] = array(
-            'no' => 8,
+            'nomor' => 8,
             'class' => 'fw-bold',
             'account' => 'TOTAL PENDAPATAN (3-7)',
             'balance' =>  $data[2]['balance'] - $data[6]['balance']
         );
         $data[8] = array(
-            'no' => 9,
+            'nomor' => 9,
             'class' => 'text-danger',
             'account' => 'BIAYA OPERASIONAL',
             'balance' =>  $totalBiaya
         );
         $data[9] = array(
-            'no' => 10,
+            'nomor' => 10,
             'class' => 'text-danger',
             'account' => 'GAJI',
             'balance' =>  $gaji->total
         );
         $data[10] = array(
-            'no' => 11,
+            'nomor' => 11,
             'class' => 'fw-bold',
             'account' => 'LABA / RUGI (8-9-10)',
             'balance' =>  $data[7]['balance'] - $data[8]['balance'] - $data[9]['balance']
@@ -141,7 +142,7 @@ class GeneratePersediaan extends Command
 
         foreach ($data as $key => $d) {
             LabaRugi::create([
-                'no' => $d['no'],
+                'nomor' => $d['nomor'],
                 'account' => $d['account'],
                 'class' => $d['class'],
                 'balance' => $d['balance'],

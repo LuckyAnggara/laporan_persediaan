@@ -13,16 +13,25 @@
     <div class="container-fluid container-lg mx-auto mt-5">
         <span class="fs-1">Laporan Laba Rugi</span>
 
-        <form action="{{ route('labarugi') }}" method="get">
-            <div class="row my-2 d-print-none">
-                <label for="staticEmail" class="col-sm-2 col-form-label">Harian</label>
-                <div class="form-group col-3">
-                    <div class="input-group date" id="datetimepicker">
-                        <input type="text" class="form-control" name="tanggal" value="{{$tanggal1}}" />
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                    </div>
+        <form action="{{ route('labarugibulanan') }}" method="get">
+        <div class="row my-2 d-print-none">
+                <label for="staticEmail" class="col-sm-2 col-form-label">Bulanan</label>
+                <div class="col-3">
+                <select class="form-select form-select-lg" name="bulan">
+                    <option value="1" {{$bulan == 1 ? 'selected' : ''}}>JANUARI</option>
+                    <option value="2" {{$bulan == 2 ? 'selected' : ''}}>FEBRUARI</option>
+                    <option value="3" {{$bulan == 3 ? 'selected' : ''}}>MARET</option>
+                    <option value="4" {{$bulan == 4 ? 'selected' : ''}}>APRIL</option>
+                    <option value="5" {{$bulan == 5 ? 'selected' : ''}}>MEI</option>
+                    <option value="6" {{$bulan == 6 ? 'selected' : ''}}>JUNI</option>
+                    <option value="7" {{$bulan == 7 ? 'selected' : ''}}>JULI</option>
+                    <option value="8"{{$bulan == 8? 'selected' : ''}}>AGUSTUS</option>
+                    <option value="9" {{$bulan == 9 ? 'selected' : ''}}>SEPTEMBER</option>
+                    <option value="10" {{$bulan == 10? 'selected' : ''}}>OKTOBER</option>
+                    <option value="11" {{$bulan == 11 ? 'selected' : ''}}>NOVEMBER</option>
+                    <option value="12" {{$bulan == 12? 'selected' : ''}}>DESEMBER</option>
+
+                </select>
                 </div>
                 <div class="col-4">
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -31,7 +40,7 @@
 
         
             <p class="my-2">
-                <span class="fs-4">Tanggal Data <span class="fw-bold">{{date('d F Y', strtotime($tanggal1))}}</span></span>
+                <span class="fs-4">Bulan Data <span class="fw-bold">{{$bulan1}}</span></span>
             </p>
 
             <div class="row d-print-none my-4">
@@ -44,14 +53,14 @@
             </div>
             {{-- TABLE --}}
             <div class="row">
-                @if($tanggal1 == null)
+                @if($bulan1 == null)
                 @else
                 <div class="col-9">
                     <table class="table">
                         <thead>
                             <th style="width:5%">No</th>
                             <th style="width:70%">Account</th>
-                            <th style="width:25%">Base ({{date('d F Y', strtotime($tanggal1))}})</th>
+                            <th style="width:25%">Base ({{$bulan1 }})</th>
                         </thead>
                         <tbody>
                             @foreach($data1 as $key=> $d)
@@ -93,7 +102,7 @@
                 <div class="col-3">
                     <table class="table">
                         <thead>
-                            <th>({{date('d F Y', strtotime($tanggal2))}})</th>
+                            <th>({{date('F', strtotime($lastMonth)) .' '. date('Y') }})</th>
                         </thead>
                         <tbody>
                             @foreach($data2 as $key=> $d)

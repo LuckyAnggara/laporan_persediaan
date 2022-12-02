@@ -15,12 +15,20 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('generate:persediaan')
-            ->dailyAt('21:00');
-        $schedule->command('generate:labarugi')
-            ->dailyAt('21:00');
         // $schedule->command('generate:persediaan')
-        //     ->everyTwoMinutes();
+        //     ->dailyAt('21:00');
+        // $schedule->command('generate:labarugi')
+        //     ->dailyAt('21:00');
+        // $schedule->command('generate:labarugibulanan')
+        //     ->lastDayOfMonth('21:30');
+
+        $schedule->command('generate:persediaan')
+        ->dailyAt('21:00');
+        $schedule->command('generate:labarugi')
+        ->dailyAt('21:30');
+        $schedule->command('generate:labarugibulanan')
+        ->lastDayOfMonth('21:50');
+
     }
 
     /**
