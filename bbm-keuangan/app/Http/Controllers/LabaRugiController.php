@@ -218,7 +218,7 @@ class LabaRugiController extends Controller
         ->groupBy('nomor')
         ->groupBy('account')
         ->groupBy('class')
-        ->whereMonth('created_at', '10')
+        ->whereMonth('created_at', '11')
         // ->whereNot('nomor', '7')
         // ->whereNot('nomor', '8')
         // ->whereNot('nomor', '10')

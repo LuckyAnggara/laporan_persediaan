@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PersediaanExport;
 use App\Models\LaporanPersediaan;
 use App\Models\Pembelian;
 use App\Models\Persediaan;
@@ -9,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PersediaanController extends Controller
 {
@@ -107,5 +109,21 @@ class PersediaanController extends Controller
 
 
         return view('persediaan.laporan', ['persediaan' => $master,  'totalSemuaPersediaan' => $totalSemuaPersediaan, 'tanggal' => $tanggalShow, 'limit' => $limit, 'tanggalData' => $tanggalData]);
+    }
+
+    function excelExport(Request $request){
+        $tanggal = $request->tanggal;
+        $limit =  $request->input('limit', 10);
+
+        if (!$tanggal) {
+            $tanggalShow = date("Y/m/d g:i A");
+            $newDate = Carbon::parse(date("Y/m/d"))->format('Y-m-d');;
+        } else {
+            $tanggalShow = $tanggal;
+            $newDate = Carbon::parse($tanggal)->format('Y-m-d');
+        }
+        $newDate = '2022-12-01';
+        // return $tanggalData;
+        return (new PersediaanExport($newDate))->download('persediaan.xlsx');
     }
 }
