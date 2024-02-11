@@ -53,6 +53,8 @@
                     <button type="button" class="btn btn-primary" onclick="window.print(); return false;">Print</button>
                 </div>
             </div>
+
+            
             {{-- TABLE --}}
             @php
             $totalTable = 0;

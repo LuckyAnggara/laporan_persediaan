@@ -53,6 +53,18 @@
                     <button type="button" class="btn btn-primary" onclick="window.print(); return false;">Print</button>
                 </div>
             </div>
+
+             <div class="row d-print-none my-4">
+                <label for="inputPassword" class="col-sm-2 col-form-label">Cari</label>
+                <div class="col-3">
+                   <input value="{{$searchQuery}}" type="text" class="form-control" name="searchQuery" id="exampleInputEmail1" placeholder="Cari berdasarkan nama, kode barang">
+                </div>
+                <div class="col-1 ">
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </div>
+
+               
+            </div>
             {{-- TABLE --}}
             @php
             $totalTable = 0;

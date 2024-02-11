@@ -33,7 +33,9 @@ class GenerateLabaRugiBulanan extends Command
         info("Cron Job Generate Laba Rugi Bulanan running at " . now());
 
         $month =  Carbon::now()->format('m');
+        $year = Carbon::now()->format('Y');
         $lastMonth =  Carbon::now()->subMonth()->format('m');
+        $lastYear =  Carbon::now()->subYear()->format('Y');
         $data = LabaRugi::selectRaw("nomor, account, class, sum(balance) as balance")
         ->groupBy('nomor')
         ->groupBy('account')
@@ -41,8 +43,8 @@ class GenerateLabaRugiBulanan extends Command
         ->whereMonth('created_at', $month)
         ->get();
 
-        $persediaanAwal = $this->persediaanBulan($lastMonth);
-        $persediaanAkhir = $this->persediaanBulan($month);
+        $persediaanAwal = $this->persediaanBulan($lastMonth, $month == 01 ? $lastYear : $year);
+        $persediaanAkhir = $this->persediaanBulan($month, $year);
 
         $data[3] = array(
             'nomor' => 4,

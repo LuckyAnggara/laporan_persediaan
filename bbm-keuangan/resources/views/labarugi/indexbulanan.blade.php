@@ -15,7 +15,7 @@
 
         <form action="{{ route('labarugibulanan') }}" method="get">
         <div class="row my-2 d-print-none">
-                <label for="staticEmail" class="col-sm-2 col-form-label">Bulanan</label>
+                <label for="staticEmail" class="col-sm-2 col-form-label">Bulan</label>
                 <div class="col-3">
                 <select class="form-select form-select-lg" name="bulan">
                     <option value="1" {{$bulan == 1 ? 'selected' : ''}}>JANUARI</option>
@@ -31,6 +31,18 @@
                     <option value="11" {{$bulan == 11 ? 'selected' : ''}}>NOVEMBER</option>
                     <option value="12" {{$bulan == 12? 'selected' : ''}}>DESEMBER</option>
 
+                </select>
+                </div>
+                
+            </div>
+
+             <div class="row my-2 d-print-none">
+                <label for="staticEmail" class="col-sm-2 col-form-label">Tahun</label>
+                <div class="col-3">
+                <select class="form-select form-select-lg" name="tahun">
+                    <option value="2022" {{$tahun == "2022" ? 'selected' : ''}}>2022</option>
+                    <option value="2023" {{$tahun == "2023" ? 'selected' : ''}}>2023</option>
+                    <option value="2024" {{$tahun == "2024" ? 'selected' : ''}}>2024</option>
                 </select>
                 </div>
                 <div class="col-4">
@@ -102,7 +114,7 @@
                 <div class="col-3">
                     <table class="table">
                         <thead>
-                            <th>({{date('F', strtotime($lastMonth)) .' '. date('Y') }})</th>
+                            <th>({{date('F', strtotime($lastMonth)) .' '. $tahun }})</th>
                         </thead>
                         <tbody>
                             @foreach($data2 as $key=> $d)

@@ -24,6 +24,7 @@ class PersediaanController extends Controller
     {
 
         $tanggal = $request->tanggal;
+        $name = $request->searchQuery;
         $limit =  $request->input('limit', 10);
         $startDate = '2020-01-01 00:00:01';
 
@@ -33,6 +34,9 @@ class PersediaanController extends Controller
             $master = Persediaan::selectRaw('sum(debit) as debit, sum(kredit) as kredit, kode_barang, sum(debit - kredit) as balance')
                 ->with('barang')
                 ->whereBetween('tanggal_transaksi', [$startDate, $newDate])
+                ->when($name, function ($query, $name) {
+                return $query->where('kode_barang', 'like', '%' . $name . '%');
+                })
                 // ->whereNot('saldo',  0)
                 ->groupBy('kode_barang');
         } else {
@@ -41,6 +45,9 @@ class PersediaanController extends Controller
             $master = Persediaan::selectRaw('sum(debit) as debit, sum(kredit) as kredit, kode_barang, sum(debit - kredit) as balance')
                 ->with('barang')
                 ->whereBetween('tanggal_transaksi', [$startDate, $newDate])
+                 ->when($name, function ($query, $name) {
+                return $query->where('kode_barang', 'like', '%' . $name . '%');
+                })
                 // ->whereNot('saldo',  0)
                 ->groupBy('kode_barang');
         }
@@ -70,11 +77,7 @@ class PersediaanController extends Controller
                 $value->harga_pokok = 0;
             }
         }
-
-
-
-
-        return view('persediaan.index', ['persediaan' => $persediaan, 'totalSemuaPersediaan' => $totalSemuaPersediaan, 'tanggal' => $tanggalShow, 'limit' => $limit]);
+        return view('persediaan.index', ['persediaan' => $persediaan, 'totalSemuaPersediaan' => $totalSemuaPersediaan, 'tanggal' => $tanggalShow, 'limit' => $limit, 'searchQuery' =>$name]);
     }
 
     function laporan(Request $request)
